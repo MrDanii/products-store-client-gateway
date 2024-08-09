@@ -11,9 +11,17 @@ async function bootstrap() {
   app.setGlobalPrefix('store1', {
     exclude: [
       {
-        path: '',
+        path: '/',
         method: RequestMethod.GET
-      }
+      },
+      // {
+      //   path: '/auth/google-auth',
+      //   method: RequestMethod.GET
+      // },
+      // {
+      //   path: '/auth/google-redirect',
+      //   method: RequestMethod.GET
+      // },
     ]
   })
 
