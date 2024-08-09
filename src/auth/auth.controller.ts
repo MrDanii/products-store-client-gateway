@@ -3,9 +3,11 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { catchError } from 'rxjs';
-import { Token, User } from './decorators';
+import { RoleProtected, Token, User } from './decorators';
 import { AuthGuard } from './guard';
 import { AuthGuard as AuthGuardGoogle } from '@nestjs/passport';
+import { UserRoleGuard } from './guard/user-role.guard';
+import { ValidRoles } from './interfaces/valid-roles';
 
 @Controller('auth')
 export class AuthController {
@@ -49,21 +51,25 @@ export class AuthController {
     }
   }
 
+  @Get('testing-auth-roles')
+  @RoleProtected(ValidRoles.user)
+  @UseGuards(AuthGuard, UserRoleGuard)
+  // @UseGuards(UserRoleGuard)
+  testingAuthRoles() {
+    return {
+      status: 200,
+      message: 'Success !!'
+    }
+  }
+
   @Get('google-auth')
   @UseGuards(AuthGuardGoogle('google'))
   async googleAuth(@Req() req) {
-    // console.log('Google Auth (Gateway)');
   }
 
   @Get('google-redirect')
   @UseGuards(AuthGuardGoogle('google'))
-  async googleAuthRedirect(@Req() req) {
-    // console.log('Google Redirect (Gateway)');
-    // console.log({
-    //   didItReachHer: ":'v",
-    //   user: req.user
-    // });
-    
+  async googleAuthRedirect(@Req() req) {    
     if(!req.user) {
       throw new BadRequestException('No Google User found')
     }
