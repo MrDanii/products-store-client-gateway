@@ -37,7 +37,8 @@ export class CreateProductDto {
   slug: string
 
   @IsString()
-  createdBy: string
+  @IsOptional()
+  createdBy?: string
 
   @IsArray()
   @IsString({each: true})

@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
 import { catchError, firstValueFrom } from 'rxjs';
 import { CreateCategoryDto, CreateProductDto, ProductRatingDto, UpdateCategoryDto, UpdateProductDto } from './dto';
-import { PaginationDto } from 'src/common';
-import { Term } from 'src/auth/decorators';
+import { PaginationDto, UserJwtDto } from 'src/common';
+import { RoleProtected, Term, User } from 'src/auth/decorators';
+import { ValidRoles } from 'src/auth/interfaces/valid-roles';
+import { AuthGuard } from 'src/auth/guard';
+import { UserRoleGuard } from 'src/auth/guard/user-role.guard';
 
 @Controller('product')
 export class ProductController {
@@ -13,7 +16,10 @@ export class ProductController {
   ) { }
 
   @Post('create-category')
-  createCategory(@Body() createCategoryDto: CreateCategoryDto) {
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard, UserRoleGuard)
+  createCategory(@Body() createCategoryDto: CreateCategoryDto, @User() user: UserJwtDto) {
+    createCategoryDto.createdBy = user.userNickName
     return this.natsClient.send('category.create', createCategoryDto).pipe(
       catchError((error) => {
         throw new RpcException(error)
@@ -42,7 +48,10 @@ export class ProductController {
   }
 
   @Patch('update-category')
-  updateCategory(@Body() updateCategoryDto: UpdateCategoryDto) {
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard, UserRoleGuard)
+  updateCategory(@Body() updateCategoryDto: UpdateCategoryDto, @User() user: UserJwtDto) {
+    updateCategoryDto.updatedBy = user.userNickName
     return this.natsClient.send('category.update', updateCategoryDto).pipe(
       catchError((error) => {
         throw new RpcException(error)
@@ -51,6 +60,8 @@ export class ProductController {
   }
 
   @Delete('deactivate-category/:id')
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard, UserRoleGuard)
   toggleCategory(@Param('id', ParseIntPipe) idCategory: number) {
     return this.natsClient.send('category.active.toggle', idCategory).pipe(
       catchError((error) => {
@@ -60,6 +71,8 @@ export class ProductController {
   }
 
   @Delete('remove-category/:id')
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard, UserRoleGuard)
   removeCategory(@Param('id', ParseIntPipe) idCategory: number) {
     return this.natsClient.send('category.remove', idCategory).pipe(
       catchError((error) => {
@@ -69,7 +82,10 @@ export class ProductController {
   }
 
   @Post('create-product')
-  create(@Body() createProductDto: CreateProductDto) {
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard, UserRoleGuard)
+  create(@Body() createProductDto: CreateProductDto, @User() user: UserJwtDto) {
+    createProductDto.createdBy = user.userNickName
     return this.natsClient.send('product.create', createProductDto).pipe(
       catchError((error) => {
         throw new RpcException(error)
@@ -96,7 +112,10 @@ export class ProductController {
   }
 
   @Patch('update-product')
-  updateProduct(@Body() updateProductDto: UpdateProductDto) {
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard, UserRoleGuard)
+  updateProduct(@Body() updateProductDto: UpdateProductDto, @User() user: UserJwtDto) {
+    updateProductDto.updatedBy = user.userNickName
     return this.natsClient.send('product.update', updateProductDto).pipe(
       catchError((error) => {
         throw new RpcException(error)
@@ -110,7 +129,10 @@ export class ProductController {
   // }
 
   @Post('rate-product')
-  rateProduct(@Body() productRatingDto: ProductRatingDto) {
+  @UseGuards(AuthGuard)
+  rateProduct(@Body() productRatingDto: ProductRatingDto, @User() user: UserJwtDto) {
+    productRatingDto.createdBy = user.userNickName
+    productRatingDto.updatedBy = user.userNickName
     return this.natsClient.send('product.rate', productRatingDto).pipe(
       catchError((error) => {
         throw new RpcException(error)
