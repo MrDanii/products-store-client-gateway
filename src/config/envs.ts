@@ -7,7 +7,12 @@ interface EnvVars {
 
   GOOGLE_CLIENT_ID: string,
   GOOGLE_CLIENT_SECRET: string,
-  GOOGLE_CLIENT_CALLBACK_URL: string
+  GOOGLE_CLIENT_CALLBACK_URL: string,
+
+  CLOUDINARY_CLOUD_NAME: string,
+  CLOUDINARY_API_KEY: string,
+  CLOUDINARY_API_SECRET: string,
+  CLOUDINARY_URL: string,
 }
 
 const envsSchema = joi.object({
@@ -17,7 +22,13 @@ const envsSchema = joi.object({
   //? This variables are not strictly necessary but will let them required to avoid problems with google authentication (OAuth 2.0)
   GOOGLE_CLIENT_ID: joi.string().required(),
   GOOGLE_CLIENT_SECRET: joi.string().required(),
-  GOOGLE_CLIENT_CALLBACK_URL: joi.string().required()
+  GOOGLE_CLIENT_CALLBACK_URL: joi.string().required(),
+
+  //? Necessary for cloud storage images
+  CLOUDINARY_CLOUD_NAME: joi.string().required(),
+  CLOUDINARY_API_KEY: joi.string().required(),
+  CLOUDINARY_API_SECRET: joi.string().required(),
+  CLOUDINARY_URL: joi.string().required(),
 })
 .unknown(true)
 
@@ -38,5 +49,10 @@ export const envs = {
   
   googleClientId: envVars.GOOGLE_CLIENT_ID,
   googleClientSecret: envVars.GOOGLE_CLIENT_SECRET,
-  googleClientCallbackUrl: envVars.GOOGLE_CLIENT_CALLBACK_URL
+  googleClientCallbackUrl: envVars.GOOGLE_CLIENT_CALLBACK_URL,
+
+  cloudinaryCloudName: envVars.CLOUDINARY_CLOUD_NAME,
+  cloudinaryApiKey: envVars.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: envVars.CLOUDINARY_API_SECRET,
+  cloudinaryUrl: envVars.CLOUDINARY_URL,
 }
