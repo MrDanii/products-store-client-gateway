@@ -7,9 +7,10 @@ import { CartModule } from './cart/cart.module';
 import { UserAddressModule } from './user-address/user-address.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { CloudinaryModule } from './files/cloudinary/cloudinary.module';
+import { UserEditModule } from './user-edit/user-edit.module';
 
 @Module({
-  imports: [HealthCheckModule, AuthModule, ProductModule, OrdersModule, CartModule, UserAddressModule, FavoritesModule, CloudinaryModule],
+  imports: [HealthCheckModule, AuthModule, ProductModule, OrdersModule, CartModule, UserAddressModule, FavoritesModule, CloudinaryModule, UserEditModule],
   controllers: [],
   providers: [],
 })
