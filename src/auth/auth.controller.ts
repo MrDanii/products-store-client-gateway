@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Get, Inject, Param, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
-import { CreateUserDto, LoginUserDto } from './dto';
+import { CreateUserDto, GoogleClientDto, LoginUserDto } from './dto';
 import { catchError } from 'rxjs';
 import { RoleProtected, Token, User } from './decorators';
 import { AuthGuard } from './guard';
@@ -60,6 +60,19 @@ export class AuthController {
       status: 200,
       message: 'Success !!'
     }
+  }
+
+  /**
+   * Call this endpoint if you already made Google Authentication from Client side (frontend)
+   * @param googleClientDto data already obtained from google response (firstName, lastName and email)
+   */
+  @Post('google-login')
+  googleLoginFromClient(@Body() googleClientDto: GoogleClientDto) {
+    return this.natsClient.send('auth.google.redirect', googleClientDto).pipe(
+      catchError((error) => {
+        throw new RpcException(error)
+      })
+    )
   }
 
   @Get('google-auth')
