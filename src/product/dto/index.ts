@@ -1,3 +1,4 @@
+export { ProductByCategoryDto } from "./product-by-category.dto";
 export { ProductRatingDto } from "./product-rating.dto";
 export { UpdateProductDto } from "./update-product.dto";
 export { CreateProductDto } from "./create-product.dto";

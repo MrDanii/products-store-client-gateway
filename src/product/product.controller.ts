@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, Parse
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { NATS_SERVICE } from 'src/config';
 import { catchError, firstValueFrom } from 'rxjs';
-import { CreateCategoryDto, CreateProductDto, ProductRatingDto, UpdateCategoryDto, UpdateProductDto } from './dto';
+import { CreateCategoryDto, CreateProductDto, ProductByCategoryDto, ProductRatingDto, UpdateCategoryDto, UpdateProductDto } from './dto';
 import { PaginationDto, UserJwtDto } from 'src/common';
 import { RoleProtected, Term, User } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces/valid-roles';
@@ -134,6 +134,15 @@ export class ProductController {
     productRatingDto.createdBy = user.userNickName
     productRatingDto.updatedBy = user.userNickName
     return this.natsClient.send('product.rate', productRatingDto).pipe(
+      catchError((error) => {
+        throw new RpcException(error)
+      })
+    )
+  }
+
+  @Get('find-product-by-category')
+  findProductsByCategory(@Query() productByCategoryDto: ProductByCategoryDto) {
+    return this.natsClient.send('product.find.all.by.category', productByCategoryDto).pipe(
       catchError((error) => {
         throw new RpcException(error)
       })
