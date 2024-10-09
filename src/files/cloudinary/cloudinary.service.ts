@@ -21,7 +21,7 @@ export class CloudinaryService {
 
   deliverFromCloudinary(idCloudinary: string, getCloudinaryImageDto: GetCloudinaryImageDto) {
     const { optimizeImage, height, width } = getCloudinaryImageDto
-    const url = (optimizeImage) ? this.getOptimizedImage(idCloudinary, width, height) : cloudinary.url(idCloudinary)
+    const url = (optimizeImage) ? this.getOptimizedImage(idCloudinary, width, height) : cloudinary.url(`products-store-app/${idCloudinary}`)
     return {
       url: url
     }
@@ -35,6 +35,7 @@ export class CloudinaryService {
       const cloudinaryImage = await new Promise<CloudinaryResponse>((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
+            folder: 'products-store-app',
             public_id: fileName
           },
           (error, result) => {
