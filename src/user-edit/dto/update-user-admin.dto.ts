@@ -9,7 +9,7 @@ export class UpdateUserAdminDto extends PartialType(UpdateUserDto) {
   @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
-  roles: string[] = ['user']
+  roles: string[]
 
   @IsOptional()
   @IsString()
