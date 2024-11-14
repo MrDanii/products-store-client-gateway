@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary'
 import { envs } from 'src/config';
 import { v4 as uuid } from 'uuid'
@@ -10,13 +10,23 @@ const streamifier = require('streamifier')
 @Injectable()
 export class CloudinaryService {
 
+  private readonly logger = new Logger('Cloudinary-service')
+
   constructor() {
-    cloudinary.config({
-      cloud_name: envs.cloudinaryCloudName,
-      api_key: envs.cloudinaryApiKey,
-      api_secret: envs.cloudinaryApiSecret,
-      secure: true
-    })
+
+    try {
+      cloudinary.config({
+        cloud_name: envs.cloudinaryCloudName,
+        api_key: envs.cloudinaryApiKey,
+        api_secret: envs.cloudinaryApiSecret,
+        secure: true
+      })
+    } catch (error) {
+      this.logger.log('Error with cloudinary connection')
+      console.log(error)
+      throw new Error('Error')
+    }
+
   }
 
   deliverFromCloudinary(idCloudinary: string, getCloudinaryImageDto: GetCloudinaryImageDto) {
@@ -35,7 +45,7 @@ export class CloudinaryService {
       const cloudinaryImage = await new Promise<CloudinaryResponse>((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
-            folder: 'products-store-app',
+            folder: 'products-store-app', // TODO: cloudinary folder hardcoded, fix later
             public_id: fileName
           },
           (error, result) => {

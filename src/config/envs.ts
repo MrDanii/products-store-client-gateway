@@ -25,10 +25,10 @@ const envsSchema = joi.object({
   GOOGLE_CLIENT_CALLBACK_URL: joi.string().required(),
 
   //? Necessary for cloud storage images
-  CLOUDINARY_CLOUD_NAME: joi.string().required(),
-  CLOUDINARY_API_KEY: joi.string().required(),
-  CLOUDINARY_API_SECRET: joi.string().required(),
-  CLOUDINARY_URL: joi.string().required(),
+  CLOUDINARY_CLOUD_NAME: joi.string(),
+  CLOUDINARY_API_KEY: joi.string(),
+  CLOUDINARY_API_SECRET: joi.string(),
+  CLOUDINARY_URL: joi.string(),
 })
 .unknown(true)
 
